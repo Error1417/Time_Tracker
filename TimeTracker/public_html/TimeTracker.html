@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <script>
+        class Timer {
+            constructor() {
+                this.startTime = null;
+            }
+
+            start() {
+                this.startTime = new Date();
+            }
+
+            stop() {
+                return new Date() - this.startTime;
+            }
+        }
+
+        function formatTime(date) {
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const seconds = date.getSeconds();
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function formatDate(date) {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        let timer;
+
+        function main() {
+            const now = new Date();
+            timer = new Timer();
+
+            document.getElementById("date").innerText = formatDate(now);
+            document.getElementById("time").innerText = formatTime(now);
+
+            console.log("\nTime is now being recorded.");
+            timer.start();
+        }
+
+        function handleSubmit() {
+            const input = document.getElementById("input");
+            const resp = input.value;
+            if (resp === "q" || resp === "Q") {
+                const elapsedTime = timer.stop();
+                const elapsedSeconds = (elapsedTime / 1000).toFixed(2);
+                document.getElementById("elapsed-time").innerText = `Elapsed time: ${elapsedSeconds} seconds.`;
+                input.style.display = 'none';
+                document.getElementById("submit-btn").style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body onload="main()">
+    <h1>Timer</h1>
+    <p>Date: <span id="date"></span></p>
+    <p>Time: <span id="time"></span></p>
+    <p>When finished recording your time, type 'q' or 'Q' and press Submit to exit.</p>
+    <input id="input" type="text" />
+    <button id="submit-btn" onclick="handleSubmit()">Submit</button>
+    <p id="elapsed-time"></p>
+</body>
+</html>
