@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+
+        #input, #submit-btn, #total-time-btn, #login-time-btn {
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        #submit-btn, #total-time-btn, #login-time-btn {
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #submit-btn:hover, #total-time-btn:hover, #login-time-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        class Timer {
+            constructor() {
+                this.startTime = null;
+            }
+
+            start() {
+                this.startTime = new Date();
+            }
+
+            stop() {
+                return new Date() - this.startTime;
+            }
+        }
+
+        function formatTime(date) {
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const seconds = date.getSeconds();
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function formatDate(date) {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        let timer;
+
+        function main() {
+            const now = new Date();
+            timer = new Timer();
+
+            document.getElementById("date").innerText = formatDate(now);
+            document.getElementById("time").innerText = formatTime(now);
+
+            console.log("\nTime is now being recorded.");
+            timer.start();
+        }
+
+        function handleSubmit() {
+            const input = document.getElementById("input");
+            const resp = input.value;
+            if (resp === "q" || resp === "Q") {
+                const elapsedTime = timer.stop();
+                const elapsedSeconds = (elapsedTime / 1000).toFixed(2);
+                document.getElementById("elapsed-time").innerText = `Elapsed time: ${elapsedSeconds} seconds.`;
+                saveToLocalStorage(elapsedSeconds);
+                input.style.display = 'none';
+                document.getElementById("submit-btn").style.display = 'none';
+            }
+        }
+
+        function saveToLocalStorage(elapsedSeconds) {
+            const now = new Date();
+            const currentTime = `${formatDate(now)} ${formatTime(now)}`;
+            const prevData = JSON.parse(localStorage.getItem("TimeKeeper")) || {totalTime: 0, lastLogin: ''};
+
+            const newData = {
+                totalTime: (parseFloat(prevData.totalTime) + parseFloat(elapsedSeconds)).toFixed(2),
+                lastLogin: currentTime
+            };
+
+            localStorage.setItem("TimeKeeper", JSON.stringify(newData));
+        }
+
+        function showTotalTime() {
+            const data = JSON.parse(localStorage.getItem("TimeKeeper"));
+            document.getElementById("total-time").innerText = `Total time so far: ${data.totalTime} seconds.`;
+        }
+
+        function showLoginTime() {
+            const data = JSON.parse(localStorage.getItem("TimeKeeper"));
+            document.getElementById("login-time").innerText = `Last program start time: ${data.lastLogin}`;
+        }
+
+    </script>
+</head>
+<body onload="main()">
+    <h1>Timer</h1>
+    <p>Date: <span id="date"></span></p>
+    <p>Time: <span id="time"></span></p>
+    <p>When finished recording your time, type 'q' or 'Q' and press Submit to exit.</p>
+    <input id="input" type="text" />
+    <button id="submit-btn" onclick="handleSubmit()">Submit</button>
+    <p id="elapsed-time"></p>
+    <button id="total-time-btn" onclick="showTotalTime()">Total Time So Far</button>
+    <p id="total-time"></p>
+    <button id="login-time-btn" onclick="showLoginTime()">Last Program Start Time</button>
+    <p id="login-time"></p>
+</body>
+</html>
+
+
